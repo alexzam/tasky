@@ -1,0 +1,39 @@
+User:
+  columns:
+    login: string
+    pass: string(32)
+    name: string
+    role:
+      type: int
+      notnull: true
+    openid: string
+  options:
+      type: INNODB
+      collate: utf8_unicode_ci
+      charset: utf8
+
+Task:
+  columns:
+    label: string
+    complete: boolean
+    creation: timestamp
+    modification: timestamp
+    x: integer
+    y: integer
+    page: boolean
+    dropped: boolean
+    parent_id: integer
+    owner_id: integer
+  relations:
+    Owner:
+      class: User
+      local: owner_id
+      foreignAlias: Tasks
+    Parent:
+      class: Task
+      local: parent_id
+      foreignAlias: Subtasks
+  options:
+      type: INNODB
+      collate: utf8_unicode_ci
+      charset: utf8

@@ -1,0 +1,100 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.playground {
+    border: 1px solid #ccc;
+    background-color: #E6E6E6;
+    height: 700px;
+    margin: 10px;
+    position: relative;
+}
+
+.toptask {
+    background-color: #E6820E;
+    color: #fff;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    position: absolute;
+    padding: 3px;
+    cursor: default;
+}
+
+.marked > .title {
+    text-decoration: line-through;
+}
+
+.unmarked > .title {
+    text-decoration:none;
+}
+
+#but-topadd {
+    background-color: #6f6;
+    color: #fff;
+    float: left;
+    margin: 3px;
+    padding: 3px;
+}
+
+.loctoolbar div {
+    margin: 1px;
+}
+
+.selected {
+    border: 2px solid #fff;
+}
+
+.tasklist {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border: 1px solid #E6820E;
+    background-color: #eee;
+    margin: 3px;
+    padding: 1px;
+}
+
+.tasklist li {
+    color: black;
+    list-style-type: none;
+    border-bottom:dashed 1px #e6a963;
+    position:relative;
+    /*height:20px;*/
+    line-height: 20px;
+    font-size:16px;
+}
+
+.tasklist li:last-child{
+    border-bottom: 0;
+}
+
+.title {
+    display:block;
+    float:left;
+}
+
+.but-mark, .but-fold {
+    background-color: #999;
+    border: 1px solid #ccc;
+    float:left;
+    height:16px;
+    line-height: 16px;
+    font-size:12px;
+    margin:0 1px;
+}
+
+.clr{
+    clear:both;
+}
+
+.hidden, ul.hide {
+    display:none;
+}
+
+li.hide {
+    height:5px;
+    line-height: 5px;
+}
