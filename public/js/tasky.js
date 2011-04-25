@@ -1,3 +1,4 @@
+// Test data
 var data = [
     {id:0, label:"aaa", x:100, y:100, marked:false,sub:[]},
     {id:1, label:"bbb", x:200, y:200, marked:false,sub:[]},
@@ -45,6 +46,7 @@ function editLabel(e) {
             .blur(saveLabel)
             .keyup(labelKeyUp)
             );
+    item.children('input').focus();
 }
 
 function topTaskDeselect(e) {
@@ -100,8 +102,8 @@ function addSubTask(item, manual, task) {
     newi.children('.title')
             .text(task.label);
     item.children('.but-fold')
-//            .addClass('hiding')
             .show();
+    newi.children('.title').dblclick();
 }
 
 function newTaskClick(e) {
