@@ -1,1 +1,46 @@
-Continue
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Taskman Test</title>
+    <script type="text/javascript" src="js/jquery/jquery-1.5.2.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-ui-1.8.12.custom.min.js"></script>
+    <link href="tasky.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="js/tasky.js"></script>
+</head>
+<body>
+<div class="playground">
+    Playground here <span id="msg">O!</span><br>
+
+    <div id="but-topadd">ADD</div>
+</div>
+
+<!-- TODO Add mark button-->
+<!-- Templates -->
+<div id="toptask-template" class="toptask task hidden">
+    <div class="but-fold minus" style="display:none">-</div>
+    <div class="but-mark hiding">M</div>
+    <span class="title">New task</span>
+
+    <div class="clr"></div>
+    <ul class="tasklist hiding2">
+        <li class="newtask hiding2"><span>...</span></li>
+    </ul>
+</div>
+
+<div class="hidden">
+    <ul>
+        <li id="subtask-template" class="task">
+            <div class="but-fold minus" style="display:none">-</div>
+            <div class="but-mark hiding">M</div>
+            <span class="title"></span>
+
+            <div class="clr"></div>
+            <ul class="tasklist hiding2">
+                <li class="newtask hiding2"><span>...</span></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

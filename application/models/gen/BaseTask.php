@@ -17,6 +17,7 @@
  * @property integer $owner_id
  * @property User $Owner
  * @property Task $Parent
+ * @property Doctrine_Collection $User
  * @property Doctrine_Collection $Subtasks
  * 
  * @package    ##PACKAGE##
@@ -75,6 +76,10 @@ abstract class BaseTask extends Doctrine_Record
         $this->hasOne('Task as Parent', array(
              'local' => 'parent_id',
              'foreign' => 'id'));
+
+        $this->hasMany('User', array(
+             'local' => 'id',
+             'foreign' => 'roottask_id'));
 
         $this->hasMany('Task as Subtasks', array(
              'local' => 'id',

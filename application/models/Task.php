@@ -12,5 +12,7 @@
  */
 class Task extends BaseTask
 {
-
+    public function __constructor(User $owner){
+        $this->Owner = $owner;
+    }
 }

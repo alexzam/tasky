@@ -7,11 +7,6 @@ User:
       type: int
       notnull: true
     openid: string
-    roottask_id: integer
-  relations:
-    Roottask:
-      class: Task
-      local: roottask_id
   options:
       type: INNODB
       collate: utf8_unicode_ci

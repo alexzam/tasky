@@ -146,9 +146,13 @@ $(function() {
             .delegate('.toptask', 'mouseleave', topTaskDeselect)
             .delegate('.task', 'mouseenter', taskSelect)
             .delegate('.task', 'mouseleave', taskDeselect);
-    for (var i in data) {
-        addTopTask(data[i]);
-    }
+
+    $.getJSON('play/get-task-page', {id:1}, function(data){
+        for (var i in data) {
+            addTopTask(data[i]);
+        }
+    });
+    
     $('#but-topadd').click(function() {
         var id = newid;
         var newt = {id:id, label:"New Task", x:100, y:100,marked:false,sub:[]};

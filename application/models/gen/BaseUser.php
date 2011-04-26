@@ -10,6 +10,8 @@
  * @property string $name
  * @property int $role
  * @property string $openid
+ * @property integer $roottask_id
+ * @property Task $Roottask
  * @property Doctrine_Collection $Tasks
  * 
  * @package    ##PACKAGE##
@@ -39,6 +41,9 @@ abstract class BaseUser extends Doctrine_Record
         $this->hasColumn('openid', 'string', null, array(
              'type' => 'string',
              ));
+        $this->hasColumn('roottask_id', 'integer', null, array(
+             'type' => 'integer',
+             ));
 
         $this->option('type', 'INNODB');
         $this->option('collate', 'utf8_unicode_ci');
@@ -48,6 +53,10 @@ abstract class BaseUser extends Doctrine_Record
     public function setUp()
     {
         parent::setUp();
+        $this->hasOne('Task as Roottask', array(
+             'local' => 'roottask_id',
+             'foreign' => 'id'));
+
         $this->hasMany('Task as Tasks', array(
              'local' => 'id',
              'foreign' => 'owner_id'));
