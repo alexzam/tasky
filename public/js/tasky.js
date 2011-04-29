@@ -90,6 +90,9 @@ function addTopTask(task) {
             ;
     item.children('span')
             .text(task.label);
+    for(var i in task.subs){
+        addSubTask(item, false, task.subs[i]);
+    }
 }
 
 function addSubTask(item, manual, task) {
@@ -103,7 +106,10 @@ function addSubTask(item, manual, task) {
             .text(task.label);
     item.children('.but-fold')
             .show();
-    newi.children('.title').dblclick();
+    if(manual) newi.children('.title').dblclick();
+    else for(var i in task.subs){
+        addSubTask(newi, false, task.subs[i]);
+    }
 }
 
 function newTaskClick(e) {
@@ -147,7 +153,7 @@ $(function() {
             .delegate('.task', 'mouseenter', taskSelect)
             .delegate('.task', 'mouseleave', taskDeselect);
 
-    $.getJSON('play/get-task-page', {id:1}, function(data){
+    $.getJSON('play/get-task-page', {id:global.rootId}, function(data){
         for (var i in data) {
             addTopTask(data[i]);
         }

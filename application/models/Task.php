@@ -12,7 +12,21 @@
  */
 class Task extends BaseTask
 {
-    public function __constructor(User $owner){
-        $this->Owner = $owner;
+    public function toJsonObj(){
+        $out = new stdclass();
+        $out->id = $this->id;
+        $out->label = $this->label;
+        $out->x = $this->x;
+        $out->y = $this->y;
+        $out->marked = $this->complete;
+        $out->subs = array();
+
+        if(!$this->page){
+            $children = $this->Subtasks;
+            foreach($children as $child){
+                $out->subs[]=$child->toJsonObj();
+            }
+        }
+        return $out;
     }
 }
