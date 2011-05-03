@@ -1,169 +1,197 @@
-// Test data
-var data = [
-    {id:0, label:"aaa", x:100, y:100, marked:false,sub:[]},
-    {id:1, label:"bbb", x:200, y:200, marked:false,sub:[]},
-    {id:2, label:"ccc", x:300, y:300, marked:true,sub:[]},
-    {id:3, label:"ddd", x:400, y:400, marked:false,sub:[]}
-];
+var tasky = {
+    newid: 1,
+    outBuffer: [],
+    
+    getTById: function(id) {
+        var item;
+        for (var i in tasky.data) {
+            item = tasky.data[i];
+            if (item.id == id) return item;
+        }
+        return null;
+    },
 
-var newid = 4;
+    getIById: function(id) {
+        return $('#t' + id);
+    },
+    
+    topTaskDrag: function(e, ui) {
+        // TODO Review
+        $('#msg').text('ID: ' + e.data.tid + ', X: ' + ui.position.left + ', y: ' + ui.position.top);
+        $(e.target).click();
+    },
 
-function getTById(id) {
-    var item;
-    for (var i in data) {
-        item = data[i];
-        if (item.id == id) return item;
-    }
-    return null;
-}
+    saveLabel: function(e) {
+        var inp = $(this);
+        inp.closest('.task').find('.title').text(inp.val()).show();
+        inp.remove();
+    },
 
-function getIById(id) {
-    return $('#t' + id);
-}
+    labelKeyUp: function(e) {
+        if (e.keyCode == 13) $(this).blur();
+    },
 
-function topTaskDrag(e, ui) {
-    // TODO Review
-    $('#msg').text('ID: ' + e.data.tid + ', X: ' + ui.position.left + ', y: ' + ui.position.top);
-    $(e.target).click();
-}
+    editLabel: function(e) {
+        var item = $(this).closest('.task');
+        var txt = item.find('.title').hide().text();
+        item.prepend($('<input>')
+                .attr('type', 'text')
+                .val(txt)
+                .blur(tasky.saveLabel)
+                .keyup(tasky.labelKeyUp)
+                );
+        item.children('input').focus();
+    },
 
-function saveLabel(e) {
-    var inp = $(this);
-    inp.closest('.task').find('.title').text(inp.val()).show();
-    inp.remove();
-}
+    topTaskDeselect: function(e) {
+        $(this).removeClass('selected')
+                .find('.hiding').hide();
+        $(this).find('.hiding2').hide();
+    },
 
-function labelKeyUp(e) {
-    if (e.keyCode == 13) $(this).blur();
-}
+    taskDeselect: function(e) {
+        $(this).children('.hiding2').addClass('hide');
+        $(this).children('.tasklist').children('.hiding2').addClass('hide');
 
-function editLabel(e) {
-    var item = $(this).closest('.task');
-    var txt = item.find('.title').hide().text();
-    item.prepend($('<input>')
-            .attr('type', 'text')
-            .val(txt)
-            .blur(saveLabel)
-            .keyup(labelKeyUp)
-            );
-    item.children('input').focus();
-}
+        return false;
+    },
 
-function topTaskDeselect(e) {
-    $(this).removeClass('selected')
-            .find('.hiding').hide();
-    $(this).find('.hiding2').hide();
-}
-
-function taskDeselect(e) {
-    $(this).children('.hiding2').addClass('hide');
-    $(this).children('.tasklist').children('.hiding2').addClass('hide');
-
-    return false;
-}
-
-function topTaskSelect(e) {
-    $(this)
-            .addClass('selected')
-            .find('.hiding').show();
-    $(this).find('.hiding2').show();
-}
-
-function taskSelect(e) {
-    $(this).children('.hiding2').removeClass('hide');
-    $(this).children('.tasklist').children('.hiding2').removeClass('hide');
-}
-
-function addTopTask(task) {
-    var marked = (task.marked) ? ' marked' : 'unmarked';
-    var item = $('#toptask-template')
-            .clone()
-            .attr('id', 't' + task.id)
-            .attr('tid', task.id)
-            .addClass(marked)
-            .removeClass('hidden')
-            .offset({left:task.x, top:task.y})
-            .appendTo('.playground')
-            .draggable({distance:3})
-            .bind('dragstop', {tid:task.id}, topTaskDrag)
-            .mouseout()
-            ;
-    item.children('span')
-            .text(task.label);
-    for(var i in task.subs){
-        addSubTask(item, false, task.subs[i]);
-    }
-}
-
-function addSubTask(item, manual, task) {
-    var marked = (task.marked) ? ' marked' : 'unmarked';
-    var newi = $('#subtask-template')
-            .clone()
-            .attr('id', 't' + task.id)
-            .addClass(marked);
-    item.children('.tasklist').children().last().before(newi);
-    newi.children('.title')
-            .text(task.label);
-    item.children('.but-fold')
-            .show();
-    if(manual) newi.children('.title').dblclick();
-    else for(var i in task.subs){
-        addSubTask(newi, false, task.subs[i]);
-    }
-}
-
-function newTaskClick(e) {
-    var task = $(this).parents('.task').first();
-    $('#msg').text('New task within ' + task.attr('tid'));
-    var id = newid;
-    var newt = {id:id, label:"New Subtask", marked:false,sub:[]};
-    newid++; // TEMP
-    addSubTask(task, true, newt);
-    $(this).parents('.tasklist').removeClass('hiding2');
-}
-
-function markTask(e) {
-    $(this).closest('.task')
-            .toggleClass('marked')
-            .toggleClass('unmarked');
-    return false;
-}
-
-function foldList(e) {
-    var tasklist = $(this).closest('.task').children('.tasklist');
-
-    if ($(this).hasClass('minus')) {
+    topTaskSelect: function(e) {
         $(this)
-                .removeClass('minus')
-                .text('+');
-        tasklist.hide();
-    } else {
-        $(this)
-                .addClass('minus')
-                .text('-');
-        tasklist.show();
+                .addClass('selected')
+                .find('.hiding').show();
+        $(this).find('.hiding2').show();
+    },
+
+    taskSelect: function(e) {
+        $(this).children('.hiding2').removeClass('hide');
+        $(this).children('.tasklist').children('.hiding2').removeClass('hide');
+    },
+
+    addTopTask: function(task) {
+        var marked = (task.marked) ? ' marked' : 'unmarked';
+        var item = $('#toptask-template')
+                .clone()
+                .attr('id', 't' + task.id)
+                .attr('tid', task.id)
+                .addClass(marked)
+                .removeClass('hidden')
+                .offset({left:task.x, top:task.y})
+                .appendTo('.playground')
+                .draggable({distance:3})
+                .bind('dragstop', {tid:task.id}, tasky.topTaskDrag)
+                .mouseout()
+                ;
+        item.children('span')
+                .text(task.label);
+        item.data('t', task);
+        for(var i in task.subs){
+            tasky.addSubTask(item, false, task.subs[i]);
+        }
+    },
+
+    addSubTask: function(item, manual, task) {
+        var marked = (task.marked) ? ' marked' : 'unmarked';
+        var newi = $('#subtask-template')
+                .clone()
+                .attr('id', 't' + task.id)
+                .addClass(marked);
+        item.children('.tasklist').children().last().before(newi);
+        newi.children('.title')
+                .text(task.label);
+        item.children('.but-fold')
+                .show();
+        newi.data('t', task);
+        if(manual) newi.children('.title').dblclick();
+        else for(var i in task.subs){
+            tasky.addSubTask(newi, false, task.subs[i]);
+        }
+    },
+
+    newTaskClick: function(e) {
+        var task = $(this).parents('.task').first();
+        $('#msg').text('New task within ' + task.attr('tid'));
+        var id = tasky.newid;
+        var newt = {id:"t"+id, label:"New Subtask", marked:false,sub:[]};
+        tasky.newid++; // TEMP
+        tasky.addSubTask(task, true, newt);
+        tasky.addInsertToBuffer(newt);
+        $(this).parents('.tasklist').removeClass('hiding2');
+    },
+    
+    markTask: function(e) {
+        $(this).closest('.task')
+                .toggleClass('marked')
+                .toggleClass('unmarked');
+        return false;
+    },
+
+    foldList: function(e) {
+        var tasklist = $(this).closest('.task').children('.tasklist');
+        
+        if ($(this).hasClass('minus')) {
+            $(this)
+                    .removeClass('minus')
+                    .text('+');
+            tasklist.hide();
+        } else {
+            $(this)
+                    .addClass('minus')
+                    .text('-');
+            tasklist.show();
+        }
+    },
+
+    addInsertToBuffer: function(task){
+        tasky.outBuffer.push({act:'i', task: task});
+    },
+
+    addUpdateToBuffer: function(task){
+        tasky.outBuffer.push({act:'u', id:task.id, task: task});
+    },
+
+    addDeleteToBuffer: function(id){
+        tasky.outBuffer.push({act:'d', id: id});
+    },
+
+    sendUpdates: function(){
+        var data = [];
+
+        while(tasky.outBuffer.length > 0){
+            // Do not post update events for task that was not yet added
+            if (tasky.outBuffer[0].act == 'u' && tasky.outBuffer[0].id.charAt(0) == 't') break;
+            data.push(tasky.outBuffer.shift());
+        }
+
+        if(data.length > 0){
+            data = {data: data};
+            console.dir(data);
+        } else console.log("No data");
+
+        setTimeout('tasky.sendUpdates()', 500);
     }
-}
+};
 
 // Initialization
 $(function() {
     $('.playground')
-            .delegate('.toptask', 'mouseenter', topTaskSelect)
-            .delegate('.toptask', 'mouseleave', topTaskDeselect)
-            .delegate('.task', 'mouseenter', taskSelect)
-            .delegate('.task', 'mouseleave', taskDeselect);
+            .delegate('.toptask', 'mouseenter', tasky.topTaskSelect)
+            .delegate('.toptask', 'mouseleave', tasky.topTaskDeselect)
+            .delegate('.task', 'mouseenter', tasky.taskSelect)
+            .delegate('.task', 'mouseleave', tasky.taskDeselect);
 
     $.getJSON('play/get-task-page', {id:global.rootId}, function(data){
         for (var i in data) {
-            addTopTask(data[i]);
+            tasky.addTopTask(data[i]);
         }
     });
     
     $('#but-topadd').click(function() {
-        var id = newid;
-        var newt = {id:id, label:"New Task", x:100, y:100,marked:false,sub:[]};
-        newid++; // TEMP
-        addTopTask(newt);
+        var id = tasky.newid;
+        var newt = {id:"t"+id, label:"New Task", x:100, y:100,marked:false,sub:[]};
+        tasky.newid++; // TEMP
+        tasky.addTopTask(newt);
+        tasky.addInsertToBuffer(newt);
         return false;
     });
     $('.toptask').mouseleave();
@@ -178,8 +206,10 @@ $(function() {
     //        return false;
     //    });
 
-    $('.title').live('dblclick', editLabel);
-    $('.but-mark').live('click', markTask);
-    $('.newtask').live('click', newTaskClick);
-    $('.but-fold').live('click', foldList);
+    $('.title').live('dblclick', tasky.editLabel);
+    $('.but-mark').live('click', tasky.markTask);
+    $('.newtask').live('click', tasky.newTaskClick);
+    $('.but-fold').live('click', tasky.foldList);
+
+    setTimeout('tasky.sendUpdates()', 500);
 });
