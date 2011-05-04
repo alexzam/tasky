@@ -166,18 +166,26 @@ var tasky = {
         if(data.length > 0){
             data = {data: data};
             console.dir(data);
-        } else console.log("No data");
-
-        setTimeout('tasky.sendUpdates()', 500);
-    }
-};
-
-// Initialization
-$(function() {
-    $('.playground')
-            .delegate('.toptask', 'mouseenter', tasky.topTaskSelect)
-            .delegate('.toptask', 'mouseleave', tasky.topTaskDeselect)
-            .delegate('.task', 'mouseenter', tasky.taskSelect)
+            $.post(
+                'play/update', 
+                data, 
+                function(data, status){
+                    console.dir(data);
+                }, 
+                'text'                                                                              
+            );                                                                                   
+        } else console.log("No data");                                                           
+                                                                                                 
+        setTimeout('tasky.sendUpdates()', 500);                                                  
+    }                                                                                            
+};                                                                                                
+                                                                                                 
+// Initialization                                                                                 
+$(function() {                                                                                    
+    $('.playground')                                                                           
+            .delegate('.toptask', 'mouseenter', tasky.topTaskSelect)                           
+            .delegate('.toptask', 'mouseleave', tasky.topTaskDeselect)                         
+            .delegate('.task', 'mouseenter', tasky.taskSelect)                                 
             .delegate('.task', 'mouseleave', tasky.taskDeselect);
 
     $.getJSON('play/get-task-page', {id:global.rootId}, function(data){

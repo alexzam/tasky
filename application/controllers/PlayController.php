@@ -27,6 +27,34 @@ class PlayController extends Zend_Controller_Action{
         }
 
         echo Zend_Json::encode($out);
-        return;
+    }
+
+    function updateAction(){
+        $this->_helper->viewRenderer->setNoRender();
+        $req = $this->getRequest();
+        $data = $req->getParam('data');
+        $out = array();
+
+        foreach($data as $item){
+            $act = $item['act'];
+            if($act == 'i'){
+                $tdata = $item['task'];
+                require_once 'AuthController.php';
+                $task = AuthController::getUser()->addTask();
+                $task->label = $tdata['label'];
+                $task->x = $tdata['x'];
+                $task->y = $tdata['y'];
+                $task->complete = ($tdata['marked'] == 'true');
+                $task->save();
+
+                $oitem = new stdclass();
+                $oitem->type = 'i';
+                $oitem->o = $tdata['id'];
+                $oitem->n = $task->id;
+                $out[] = $oitem;
+            }
+        }
+
+        echo Zend_Json::encode($out);
     }
 }
