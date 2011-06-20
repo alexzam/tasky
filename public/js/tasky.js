@@ -147,7 +147,7 @@ var tasky = {
     },
 
     addUpdateToBuffer: function(task){
-        tasky.outBuffer.push({act:'u', id:task.id, task: task});
+        tasky.outBuffer.push({act:'u', id:task.tid, task: task});
     },
 
     addDeleteToBuffer: function(id){
@@ -170,9 +170,24 @@ var tasky = {
                 'play/update', 
                 data, 
                 function(data, status){
-                    console.dir(data);
+                    for(i in data){
+                        var ditem = data[i];
+                        if(ditem == null) continue;
+
+                        console.log('Incoming update of type '+ditem.type);
+                        if(ditem.type == 'i'){
+                            console.log('Changing id '+ditem.o+' to '+ditem.n);
+                            $('.playground')
+                                .find('.task[id='+ditem.o+']')
+                                .attr('id', 't'+ditem.n)
+                                .attr('tid', ditem.n);
+                            for(j in tasky.outBuffer){
+                                if(tasky.outBuffer[j].id == ditem.o) tasky.outBuffer[j].id = ditem.n;
+                            }
+                        }
+                    }
                 }, 
-                'text'                                                                              
+                'json'                                                                              
             );                                                                                   
         } else console.log("No data");                                                           
                                                                                                  

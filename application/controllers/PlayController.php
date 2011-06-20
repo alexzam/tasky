@@ -42,8 +42,8 @@ class PlayController extends Zend_Controller_Action{
                 require_once 'AuthController.php';
                 $task = AuthController::getUser()->addTask();
                 $task->label = $tdata['label'];
-                $task->x = $tdata['x'];
-                $task->y = $tdata['y'];
+                $task->x = isset($tdata['x'])?$tdata['x']:-1;
+                $task->y = isset($tdata['y'])?$tdata['y']:-1;
                 $task->complete = ($tdata['marked'] == 'true');
                 $task->save();
 
