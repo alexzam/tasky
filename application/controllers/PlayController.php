@@ -1,6 +1,7 @@
 <?php
 
 class PlayController extends Zend_Controller_Action{
+    // Show main screen
     function indexAction(){
         require_once 'AuthController.php';
         $view = $this->view;
@@ -9,6 +10,8 @@ class PlayController extends Zend_Controller_Action{
 	$view->rootId = $user->roottask_id;
     }
 
+    // Return JSON: task set (page).
+    // Get: [id] - task id for page
     function getTaskPageAction(){
         $this->_helper->viewRenderer->setNoRender();
         $req = $this->getRequest();
@@ -29,6 +32,8 @@ class PlayController extends Zend_Controller_Action{
         echo Zend_Json::encode($out);
     }
 
+    // Store some updates.
+    // Get: data[] - array of events
     function updateAction(){
         $this->_helper->viewRenderer->setNoRender();
         $req = $this->getRequest();
@@ -49,7 +54,7 @@ class PlayController extends Zend_Controller_Action{
 
                 $oitem = new stdclass();
                 $oitem->type = 'i';
-                $oitem->o = $tdata['id'];
+                $oitem->o = $tdata['tid'];
                 $oitem->n = $task->id;
                 $out[] = $oitem;
             }

@@ -70,9 +70,11 @@ var tasky = {
 
     addTopTask: function(task) {
         var marked = (task.marked) ? ' marked' : 'unmarked';
+        var tid = 't' + tasky.newid;
+
         var item = $('#toptask-template')
                 .clone()
-                .attr('id', 't' + task.id)
+                .attr('id', tid)
                 .attr('tid', task.id)
                 .addClass(marked)
                 .removeClass('hidden')
@@ -80,14 +82,15 @@ var tasky = {
                 .appendTo('.playground')
                 .draggable({distance:3})
                 .bind('dragstop', {tid:task.id}, tasky.topTaskDrag)
-                .mouseout()
-                ;
+                .mouseout();
         item.children('span')
                 .text(task.label);
         item.data('t', task);
+        tasky.newid++;
         for(var i in task.subs){
             tasky.addSubTask(item, false, task.subs[i]);
         }
+        return tid;
     },
 
     addSubTask: function(item, manual, task) {
@@ -142,7 +145,8 @@ var tasky = {
         }
     },
 
-    addInsertToBuffer: function(task){
+    addInsertToBuffer: function(task, tid){
+        task.tid = tid;
         tasky.outBuffer.push({act:'i', task: task});
     },
 
@@ -179,7 +183,6 @@ var tasky = {
                             console.log('Changing id '+ditem.o+' to '+ditem.n);
                             $('.playground')
                                 .find('.task[id='+ditem.o+']')
-                                .attr('id', 't'+ditem.n)
                                 .attr('tid', ditem.n);
                             for(j in tasky.outBuffer){
                                 if(tasky.outBuffer[j].id == ditem.o) tasky.outBuffer[j].id = ditem.n;
@@ -211,10 +214,9 @@ $(function() {
     
     $('#but-topadd').click(function() {
         var id = tasky.newid;
-        var newt = {id:"t"+id, label:"New Task", x:100, y:100,marked:false,sub:[]};
-        tasky.newid++; // TEMP
-        tasky.addTopTask(newt);
-        tasky.addInsertToBuffer(newt);
+        var newt = {id:-1, label:"New Task", x:100, y:100,marked:false,sub:[]};
+        var tid = tasky.addTopTask(newt);
+        tasky.addInsertToBuffer(newt, tid);
         return false;
     });
     $('.toptask').mouseleave();
