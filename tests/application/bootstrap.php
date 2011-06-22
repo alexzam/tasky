@@ -21,7 +21,22 @@ Zend_Registry::set('config',$config);
 
 require_once 'Doctrine.php';
 spl_autoload_register(array('Doctrine', 'autoload'));		
+
+unlink($config->db->file);
 Doctrine_Manager::connection($config->db->dsn);
+
+$dboptions = array('packagesPrefix' => 'ts_',
+    'packagesPath' => '',
+    'packagesFolderName' => 'packages',
+    'suffix' => '.php',
+    'generateBaseClasses' => true,
+    'baseClassesPrefix' => 'Base',
+    'baseClassesDirectory' => 'gen',
+    'baseClassName' => 'Doctrine_Record'
+);
+$migration = new Doctrine_Migration(APPLICATION_PATH . '/models/migration/');
+$migration->migrate();
+
 Doctrine::loadModels(APPLICATION_PATH.'/models/',Doctrine_Core::MODEL_LOADING_AGGRESSIVE);
 
 require_once 'ControllerTestCase.php';

@@ -214,7 +214,7 @@ $(function() {
     
     $('#but-topadd').click(function() {
         var id = tasky.newid;
-        var newt = {id:-1, label:"New Task", x:100, y:100,marked:false,sub:[]};
+        var newt = {id:-1, label:"New Task", x:100, y:100,marked:false,sub:[],parent:global.rootId};
         var tid = tasky.addTopTask(newt);
         tasky.addInsertToBuffer(newt, tid);
         return false;
