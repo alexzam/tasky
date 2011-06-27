@@ -10,6 +10,7 @@ abstract class ControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase
     {     
         $this->bootstrap = array($this, 'appBootstrap');
         parent::setUp();
+        $this->getFrontController()->setParam('noErrorHandler', true);
     }
     
     public function appBootstrap()
