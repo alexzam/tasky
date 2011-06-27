@@ -58,6 +58,29 @@ class PlayController extends Zend_Controller_Action{
                 $oitem->o = $tdata['tid'];
                 $oitem->n = $task->id;
                 $out[] = $oitem;
+            } else if ($act == 'u') {
+                $tdata = $item['task'];
+                $task = Doctrine_Core::getTable('Task')->find($tdata['id']);
+                $task->label = $tdata['label'];
+                $task->x = isset($tdata['x'])?$tdata['x']:-1;
+                $task->y = isset($tdata['y'])?$tdata['y']:-1;
+                $task->complete = ($tdata['marked'] == 'true');
+                $task->parent_id = $tdata['parent'];
+                $task->save();
+
+                $oitem = new stdclass();
+                $oitem->type = 'u';
+                $oitem->id = $tdata['id'];
+                $out[] = $oitem;
+            } else if ($act == 'd') {
+                $id = $item['id'];
+                $task = Doctrine_Core::getTable('Task')->find($id);
+                $task->remove();
+
+                $oitem = new stdclass();
+                $oitem->type = 'd';
+                $oitem->id = $id;
+                $out[] = $oitem;
             }
         }
 
