@@ -6,7 +6,7 @@ abstract class ControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase
 {
     protected $application;
     
-     public function setUp()
+    public function setUp()
     {     
         $this->bootstrap = array($this, 'appBootstrap');
         parent::setUp();

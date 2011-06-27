@@ -31,6 +31,5 @@ class PlayControllerTest extends ControllerTestCase
         $this->assertAction("update");
         $this->assertResponseCode(200);
         $this->assertNotRedirect();
-	echo ':';print_r($this->getResponse()->getHeaders());echo ':';
     }
 }
