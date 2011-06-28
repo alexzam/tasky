@@ -1,20 +1,7 @@
 var tasky = {
     newid: 1,
     outBuffer: [],
-    
-    getTById: function(id) {
-        var item;
-        for (var i in tasky.data) {
-            item = tasky.data[i];
-            if (item.id == id) return item;
-        }
-        return null;
-    },
 
-    getIById: function(id) {
-        return $('#t' + id);
-    },
-    
     topTaskDrag: function(e, ui) {
         // TODO Review
         $('#msg').text('ID: ' + e.data.tid + ', X: ' + ui.position.left + ', y: ' + ui.position.top);

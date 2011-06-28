@@ -1,5 +1,10 @@
-<phpunit bootstrap="./application/bootstrap.php">         
- <testsuite name="Tasky">
-    <directory>./</directory>         
- </testsuite>
+<phpunit bootstrap="./application/bootstrap.php">
+    <testsuite name="Tasky">
+        <directory>./</directory>
+    </testsuite>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">../application</directory>
+        </whitelist>
+    </filter>
 </phpunit>

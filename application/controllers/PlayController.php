@@ -66,6 +66,7 @@ class PlayController extends Zend_Controller_Action{
                 $task->y = isset($tdata['y'])?$tdata['y']:-1;
                 $task->complete = ($tdata['marked'] == 'true');
                 $task->parent_id = $tdata['parent'];
+                $task->page = ($tdata['page'] == 'true');
                 $task->save();
 
                 $oitem = new stdclass();
