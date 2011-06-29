@@ -76,7 +76,7 @@ class PlayController extends Zend_Controller_Action{
             } else if ($act == 'd') {
                 $id = $item['id'];
                 $task = Doctrine_Core::getTable('Task')->find($id);
-                $task->remove();
+                $task->delete();
 
                 $oitem = new stdclass();
                 $oitem->type = 'd';

@@ -5,6 +5,12 @@
     <filter>
         <whitelist>
             <directory suffix=".php">../application</directory>
+            <exclude>
+                <file>../application/controllers/DoctrineController.php</file>
+                <file>../application/controllers/ErrorController.php</file>
+                <directory suffix=".php">../application/models/gen</directory>
+                <directory suffix=".php">../application/models/migration</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
