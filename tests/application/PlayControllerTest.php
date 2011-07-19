@@ -35,12 +35,8 @@ class PlayControllerTest extends ControllerTestCase {
         $this->dispatch("/play/update");
         $this->assertController("play");
         $this->assertAction("update");
-        $this->assertResponseCode(200);
-        $this->assertNotRedirect();
-        $this->assertEmpty($this->getResponse()->getException());
 
-        $rdata = Zend_Json::decode($this->getResponse()->getBody());
-        $this->assertNotNull($rdata);
+        $rdata = $this->assertGoodJsonResponse();
         $rdata = $rdata[0];
         $this->assertNotNull($rdata);
         $this->assertEquals(array(
@@ -105,12 +101,8 @@ class PlayControllerTest extends ControllerTestCase {
         $this->dispatch("/play/update");
         $this->assertController("play");
         $this->assertAction("update");
-        $this->assertResponseCode(200);
-        $this->assertNotRedirect();
-        $this->assertEmpty($this->getResponse()->getException());
 
-        $rdata = Zend_Json::decode($this->getResponse()->getBody());
-        $this->assertNotNull($rdata);
+        $rdata = $this->assertGoodJsonResponse();
         $rdata = $rdata[0];
         $this->assertNotNull($rdata);
         $this->assertEquals(array(
@@ -162,12 +154,8 @@ class PlayControllerTest extends ControllerTestCase {
         $this->dispatch("/play/update");
         $this->assertController("play");
         $this->assertAction("update");
-        $this->assertResponseCode(200);
-        $this->assertNotRedirect();
-        $this->assertEmpty($this->getResponse()->getException());
 
-        $rdata = Zend_Json::decode($this->getResponse()->getBody());
-        $this->assertNotNull($rdata);
+        $rdata = $this->assertGoodJsonResponse();
         $rdata = $rdata[0];
         $this->assertNotNull($rdata);
         $this->assertEquals(array(
@@ -210,15 +198,21 @@ class PlayControllerTest extends ControllerTestCase {
 
         $tid2=$task->id;
 
+        $task = AuthController::getUser()->addTask();
+        $task->label = 'CCC';
+        $task->complete = false;
+        $task->x = 0;
+        $task->y = 0;
+        $task->page = false;
+        $task->parent_id = $tid2;
+        $task->save();
+
+        $tid3=$task->id;
+
         $this->dispatch("/play/get-task-page/id/$tid");
         $this->assertController("play");
         $this->assertAction("get-task-page");
-        $this->assertResponseCode(200);
-        $this->assertNotRedirect();
-        $this->assertEmpty($this->getResponse()->getException());
-
-        $rdata = Zend_Json::decode($this->getResponse()->getBody());
-        $this->assertNotNull($rdata);
+        $rdata = $this->assertGoodJsonResponse();
 
         $this->assertEquals(array(array(
                 'id'    =>  $tid2,
@@ -226,7 +220,14 @@ class PlayControllerTest extends ControllerTestCase {
                 'x'     =>  200,
                 'y'     =>  200,
                 'marked'=>  false,
-                'subs'  =>  array()
+                'subs'  =>  array(array(
+                    'id'    =>  $tid3,
+                    'label' =>  'CCC',
+                    'x'     =>  0,
+                    'y'     =>  0,
+                    'marked'=>  false,
+                    'subs'  =>  array()
+                ))
           )), $rdata);
     }
 
@@ -247,12 +248,7 @@ class PlayControllerTest extends ControllerTestCase {
         $this->dispatch("/play/get-task-page");
         $this->assertController("play");
         $this->assertAction("get-task-page");
-        $this->assertResponseCode(200);
-        $this->assertNotRedirect();
-        $this->assertEmpty($this->getResponse()->getException());
-
-        $rdata = Zend_Json::decode($this->getResponse()->getBody());
-        $this->assertNotNull($rdata);
+        $rdata = $this->assertGoodJsonResponse();
 
         $this->assertEquals(array(array(
                 'id'    =>  $tid,
@@ -262,5 +258,101 @@ class PlayControllerTest extends ControllerTestCase {
                 'marked'=>  false,
                 'subs'  =>  array()
           )), $rdata);
+    }
+
+    public function testInsertSubTask(){
+        require_once APPLICATION_PATH . '/controllers/AuthController.php';
+
+        // Add top task
+        $task = AuthController::getUser()->addTask();
+        $task->label = 'AAA';
+        $task->complete = false;
+        $task->x = 100;
+        $task->y = 100;
+        $task->page = false;
+        $task->parent_id = self::$root;
+        $task->save();
+
+        $tid = $task->id;
+
+        // Add sub-task
+        $this->request
+            ->setMethod('POST')
+            ->setPost(array(
+                           'data' => array(
+                               array(
+                                   'act' => 'i',
+                                   'task' => array(
+                                       'id' => -1,
+                                       'label' => 'Subtask',
+                                       'x' => 0,
+                                       'y' => 0,
+                                       'marked' => 'false',
+                                       'parent' => $tid,
+                                       'tid' => 't2'
+                                   )
+                               )
+                           )
+                      ));
+        $this->dispatch("/play/update");
+        $this->assertController("play");
+        $this->assertAction("update");
+
+        $rdata = $this->assertGoodJsonResponse();
+        $rdata = $rdata[0];
+        $this->assertNotNull($rdata);
+        $this->assertEquals(array(
+                                 'type' => 'i',
+                                 'o' => 't2',
+                                 'n' => $tid + 1
+                            ), $rdata);
+
+        $task = Doctrine_Core::getTable('Task')->find($rdata['n']);
+        $this->assertNotNull($task);
+        $this->assertInstanceOf('Task', $task);
+        // TODO Add Creation/Modification functionality
+        //        $this->assertNotNull($task->creation);
+        //        $this->assertNotNull($task->modification);
+        $task = $task->toArray();
+        unset($task['creation']);
+        unset($task['modification']);
+        $this->assertEquals(array(
+                                 'id' => $tid + 1,
+                                 'label' => 'Subtask',
+                                 'complete' => false,
+                                 'x' => 0,
+                                 'y' => 0,
+                                 'page' => false,
+                                 'dropped' => false,
+                                 'parent_id' => $tid,
+                                 'owner_id' => self::$uid
+                            ), $task);
+
+        $task = Doctrine_Core::getTable('Task')->find($tid);
+        $this->assertNotEmpty($task->Subtasks);
+        $task=$task->Subtasks[0]->toArray();
+        unset($task['creation']);
+        unset($task['modification']);
+        $this->assertEquals(array(
+                                 'id' => $tid + 1,
+                                 'label' => 'Subtask',
+                                 'complete' => false,
+                                 'x' => 0,
+                                 'y' => 0,
+                                 'page' => false,
+                                 'dropped' => false,
+                                 'parent_id' => $tid,
+                                 'owner_id' => self::$uid
+                            ), $task);
+    }
+
+    private function assertGoodJsonResponse() {
+        $this->assertResponseCode(200);
+        $this->assertNotRedirect();
+        $this->assertEmpty($this->getResponse()->getException());
+
+        $rdata = Zend_Json::decode($this->getResponse()->getBody());
+        $this->assertNotNull($rdata);
+        return $rdata;
     }
 }

@@ -123,10 +123,13 @@ var tasky = {
     },
 
     addSubTask: function(item, manual, task) {
+        var tid = 't' + tasky.newid;
         var marked = (task.marked) ? ' marked' : 'unmarked';
+
         var newi = $('#subtask-template')
             .clone()
-            .attr('id', 't' + task.id)
+            .attr('id', tid)
+            .attr('tid', task.id)
             .addClass(marked);
         item.children('.tasklist').children().last().before(newi);
         newi.children('.title')
@@ -134,21 +137,22 @@ var tasky = {
         item.children('.but-fold')
             .show();
         newi.data('t', task);
+        tasky.newid++;
         if (manual) newi.children('.title').dblclick();
         else for (var i in task.subs) {
             tasky.addSubTask(newi, false, task.subs[i]);
         }
-        // TODO Add update sending
+
+        return tid;
     },
 
     newTaskClick: function(e) {
         var task = $(this).parents('.task').first();
         $('#msg').text('New task within ' + task.attr('tid'));
-        var id = tasky.newid;
-        var newt = {id:"t" + id, label:"New Subtask", marked:false,sub:[]};
-        tasky.newid++;
-        tasky.addSubTask(task, true, newt);
-        tasky.addInsertToBuffer(newt);
+        var newt = new Task(-1, task.data().t.id);
+        newt.label = 'New Subtask';
+        var tid = tasky.addSubTask(task, true, newt);
+        tasky.addInsertToBuffer(newt, tid);
         $(this).parents('.tasklist').removeClass('hiding2');
     },
 
@@ -230,6 +234,17 @@ var tasky = {
         } else console.log("No data");
 
         setTimeout('tasky.sendUpdates()', 500);
+    },
+
+    createTaskFromData:function(ditem) {
+        var task = new Task(ditem.id, global.rootId);
+        task.merge(ditem);
+        for(var i in ditem.subs){
+            var subtask = tasky.createTaskFromData(ditem.subs[i]);
+            task.subs.push(subtask);
+        }
+
+        return task;
     }
 };
 
@@ -244,8 +259,7 @@ $(function() {
     $.getJSON('play/get-task-page', {id:global.rootId}, function(data) {
         for (var i in data) {
             var ditem = data[i];
-            var item = new Task(ditem.id, global.rootId);
-            item.merge(ditem);
+            var item = tasky.createTaskFromData(ditem);
             tasky.addTopTask(item);
         }
     });
