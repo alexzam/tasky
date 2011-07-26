@@ -94,7 +94,7 @@ var tasky = {
             .val(txt)
             .blur(tasky.saveLabel)
             .keyup(tasky.labelKeyUp)
-        );
+            );
         item.children('input').focus();
     },
 
@@ -230,17 +230,17 @@ var tasky = {
                     }
                 },
                 'json'
-            );
+                );
         } else console.log("No data");
 
         setTimeout('tasky.sendUpdates()', 500);
     },
 
-    createTaskFromData:function(ditem) {
-        var task = new Task(ditem.id, global.rootId);
+    createTaskFromData:function(ditem, parent) {
+        var task = new Task(ditem.id, (parent == null) ? global.rootId : parent);
         task.merge(ditem);
-        for(var i in ditem.subs){
-            var subtask = tasky.createTaskFromData(ditem.subs[i]);
+        for (var i in ditem.subs) {
+            var subtask = tasky.createTaskFromData(ditem.subs[i], ditem.id);
             task.subs.push(subtask);
         }
 
