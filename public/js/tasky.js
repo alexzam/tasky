@@ -50,6 +50,8 @@ var tasky = {
         item.children('span')
             .text(task.label);
         item.data('t', task);
+        item.find('.newtask')
+            .droppable({hoverClass:'drop-target-hl'});
         tasky.newid++;
         for (var i in task.subs) {
             tasky.addSubTask(item, false, task.subs[i]);

@@ -103,3 +103,7 @@ li.hide {
     line-height: 4px;
     margin-bottom:3px;
 }
+
+.drop-target-hl{
+    background-color: red;
+}
