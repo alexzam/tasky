@@ -55,7 +55,6 @@ body {
     border: 1px solid #E6820E;
     background-color: #eee;
     margin: 3px;
-/*    margin: 0;*/
     padding: 1px;
 }
 
@@ -64,7 +63,6 @@ body {
     list-style-type: none;
     border-bottom:dashed 1px #e6a963;
     position:relative;
-    /*height:20px;*/
     line-height: 20px;
     font-size:16px;
 }
@@ -105,6 +103,5 @@ li.small {
 }
 
 .drop-target-hl{
-    background-color: red !important;
     border: 2px solid red;
 }
