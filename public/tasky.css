@@ -44,7 +44,7 @@ body {
     margin: 1px;
 }
 
-.selected {
+.playground > .selected {
     border: 2px solid #fff;
 }
 
@@ -78,7 +78,7 @@ body {
     float:left;
 }
 
-.but-mark, .but-fold {
+.but-mark, .but-fold, .but-add {
     background-color: #999;
     border: 1px solid #ccc;
     float:left;
@@ -98,12 +98,13 @@ body {
     display:none;
 }
 
-li.hide {
+li.small {
     height:7px;
     line-height: 4px;
     margin-bottom:3px;
 }
 
 .drop-target-hl{
-    background-color: red;
+    background-color: red !important;
+    border: 2px solid red;
 }

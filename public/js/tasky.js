@@ -51,7 +51,7 @@ var tasky = {
             .text(task.label);
         item.data('t', task);
         item.find('.newtask')
-            .droppable({hoverClass:'drop-target-hl'});
+            .droppable({accept:'.task', activeClass:'drop-target-hl', activate:function(){console.log('active')}});
         tasky.newid++;
         for (var i in task.subs) {
             tasky.addSubTask(item, false, task.subs[i]);
@@ -101,13 +101,14 @@ var tasky = {
     },
 
     topTaskDeselect: function(e) {
-        $(this).removeClass('selected').find('.hiding').hide();
-        $(this).find('.hiding2').hide();
+        $(this).removeClass('selected').children('.hiding').hide();
+        //$(this).find('.hiding-drag').hide();
     },
 
     taskDeselect: function(e) {
-        $(this).children('.hiding2').addClass('hide');
-        $(this).children('.tasklist').children('.hiding2').addClass('hide');
+        //$(this).children('.hiding-drag').addClass('hide');
+        //$(this).children('.tasklist').children('.hiding-drag').addClass('hide');
+        $(this).removeClass('selected').children('.hiding').hide();
 
         return false;
     },
@@ -115,13 +116,16 @@ var tasky = {
     topTaskSelect: function(e) {
         $(this)
             .addClass('selected')
-            .find('.hiding').show();
-        $(this).find('.hiding2').show();
+            .children('.hiding').show();
+        //$(this).find('.hiding-drag').show();
     },
 
     taskSelect: function(e) {
-        $(this).children('.hiding2').removeClass('hide');
-        $(this).children('.tasklist').children('.hiding2').removeClass('hide');
+        $(this)
+            .addClass('selected')
+            .children('.hiding').show();
+        //$(this).children('.hiding-drag').removeClass('hide');
+        //$(this).children('.tasklist').children('.hiding-drag').removeClass('hide');
     },
 
     addSubTask: function(item, manual, task) {
@@ -132,13 +136,16 @@ var tasky = {
             .clone()
             .attr('id', tid)
             .attr('tid', task.id)
-            .addClass(marked);
-        item.children('.tasklist').children().last().before(newi);
+            .addClass(marked)
+            .data('t', task)
+            .mouseout();
+        item.children('.tasklist').removeClass('hiding-drag').removeClass('hidden')
+            .children().last().before(newi);
         newi.children('.title')
             .text(task.label);
         item.children('.but-fold')
             .show();
-        newi.data('t', task);
+
         tasky.newid++;
         if (manual) newi.children('.title').dblclick();
         else for (var i in task.subs) {
@@ -150,12 +157,15 @@ var tasky = {
 
     newTaskClick: function(e) {
         var task = $(this).parents('.task').first();
+	var butFold=task.children('.but-fold');
+	if(!butFold.hasClass('minus')){
+            butFold.click();
+        }
         $('#msg').text('New task within ' + task.attr('tid'));
         var newt = new Task(-1, task.data().t.id);
         newt.label = 'New Subtask';
         var tid = tasky.addSubTask(task, true, newt);
         tasky.addInsertToBuffer(newt, tid);
-        $(this).parents('.tasklist').removeClass('hiding2');
     },
 
     markTask: function(e) {
@@ -266,7 +276,7 @@ $(function() {
         }
     });
 
-    $('#but-topadd').click(tasky.addTopTaskButton);
+    $('#but-topadd').click(tasky.addTopTaskButton).droppable({accept:'.task', activeClass:'drop-target-hl', activate:function(){console.log('active')}});;
     $('.toptask').mouseleave();
     // TODO Deletion
     //    $('#but-locdel').click(function() {
@@ -281,8 +291,9 @@ $(function() {
 
     $('.title').live('dblclick', tasky.editLabel);
     $('.but-mark').live('click', tasky.markTask);
-    $('.newtask').live('click', tasky.newTaskClick);
+//    $('.newtask').live('click', tasky.newTaskClick);
     $('.but-fold').live('click', tasky.foldList);
+    $('.but-add').live('click', tasky.newTaskClick);
 
     setTimeout('tasky.sendUpdates()', 500);
 });
