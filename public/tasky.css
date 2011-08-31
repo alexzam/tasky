@@ -44,10 +44,6 @@ body {
     margin: 1px;
 }
 
-.playground > .selected {
-    border: 2px solid #fff;
-}
-
 .tasklist {
     border-radius: 3px;
     -moz-border-radius: 3px;
@@ -104,4 +100,9 @@ li.small {
 
 .drop-target-hl{
     border: 2px solid red;
+}
+
+.ui-draggable-dragging {
+   z-index:1;
+   opacity:0.6;
 }

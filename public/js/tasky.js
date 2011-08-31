@@ -51,7 +51,11 @@ var tasky = {
         item.children('span')
             .text(task.label);
         item.data('t', task);
-        tasky.makeListDroppable(item.find('.tasklist'));
+        tasky.makeItemDroppable(item);
+	$('#newtask-template')
+	    .clone()
+            .attr('id', null)
+	    .appendTo(item.find('.tasklist'));
             
         tasky.newid++;
         for (var i in task.subs) {
@@ -73,16 +77,11 @@ var tasky = {
         //tasky.addUpdateToBuffer(task);
     },
 
-    makeListDroppable:function(list){
-        list.droppable({
+    makeItemDroppable:function(item){
+        item.droppable({
 		accept:'.task', 
-		hoverClass:'drop-target-hl', 
-		activate:function(){
-			tasky.dragging = true;
-		},
-		deactivate:function(){
-			tasky.dragging = false;
-		},
+		hoverClass:'drop-target-hl',
+                tolerance:'pointer',
 		over:function(){
 			$(this).find('.hiding-drag').show();
 		},
@@ -156,14 +155,20 @@ var tasky = {
             .addClass(marked)
             .data('t', task)
             .mouseout();
-        item.children('.tasklist').removeClass('hiding-drag').removeClass('hidden')
-            .children().last().before(newi);
+        item.children('.tasklist').removeClass('hiding-drag').show()
+            .append(newi);
+        item.children('.tasklist').children('.newtask')
+            .remove();
         newi.children('.title')
             .text(task.label);
         item.children('.but-fold')
             .show();
 
-	tasky.makeListDroppable(item.children('.tasklist'));
+	tasky.makeItemDroppable(newi);
+        $('#newtask-template')
+	    .clone()
+            .attr('id', null)
+	    .appendTo(newi.find('.tasklist'));
 
         tasky.newid++;
         if (manual) newi.children('.title').dblclick();
@@ -176,14 +181,15 @@ var tasky = {
 
     newTaskClick: function(e) {
         var task = $(this).parents('.task').first();
-	var butFold=task.children('.but-fold');
-	if(!butFold.hasClass('minus')){
-            butFold.click();
-        }
         $('#msg').text('New task within ' + task.attr('tid'));
         var newt = new Task(-1, task.data().t.id);
         newt.label = 'New Subtask';
         var tid = tasky.addSubTask(task, true, newt);
+	var butFold=task.children('.but-fold');
+	if(!butFold.hasClass('minus')){
+            butFold.click();
+        }
+
         tasky.addInsertToBuffer(newt, tid);
     },
 
